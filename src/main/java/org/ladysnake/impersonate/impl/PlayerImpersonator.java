@@ -18,8 +18,10 @@
 package org.ladysnake.impersonate.impl;
 
 import com.mojang.authlib.GameProfile;
-import dev.onyxstudios.cca.api.v3.component.CopyableComponent;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.registry.RegistryWrapper;
+import org.ladysnake.cca.api.v3.component.CopyableComponent;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -184,7 +186,7 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
     }
 
     @Override
-    public void copyFrom(PlayerImpersonator other) {
+    public void copyFrom(PlayerImpersonator other, RegistryWrapper.WrapperLookup registryLookup) {
         this.stopImpersonations();
         this.stackedImpersonations.putAll(other.stackedImpersonations);
         this.resetImpersonation();
@@ -199,7 +201,7 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
     }
 
     @Override
-    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+    public void writeSyncPacket(RegistryByteBuf buf, ServerPlayerEntity recipient) {
         GameProfile profile = this.getImpersonatedProfile();
         if (profile == null) {
             buf.writeBoolean(false);
@@ -210,14 +212,14 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
     }
 
     @Override
-    public void applySyncPacket(PacketByteBuf buf) {
+    public void applySyncPacket(RegistryByteBuf buf) {
         boolean present = buf.readBoolean();
         GameProfile profile = present ? PacketCodecs.GAME_PROFILE.decode(buf) : null;
         this.setImpersonatedProfile(profile);
     }
 
     @Override
-    public void readFromNbt(@NotNull NbtCompound tag) {
+    public void readFromNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         if (tag.contains("impersonations", NbtElement.LIST_TYPE)) {
             this.stopImpersonations();
             NbtList impersonations = tag.getList("impersonations", NbtElement.COMPOUND_TYPE);
@@ -236,7 +238,7 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
     }
 
     @Override
-    public void writeToNbt(@NotNull NbtCompound tag) {
+    public void writeToNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         if (this.isImpersonating()) {
             NbtList profiles = new NbtList();
             for (var entry : this.stackedImpersonations.entrySet()) {

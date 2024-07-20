@@ -1,10 +1,10 @@
 [versions]
-cca = "5.4.0"
+cca = "6.0.0"
 fpa = "0.2-SNAPSHOT"
 elmendorf = "0.12.0-SNAPSHOT"
 
 [libraries]
-cca-base = { module = "dev.onyxstudios.cardinal-components-api:cardinal-components-base", version.ref = "cca" }
-cca-entity = { module = "dev.onyxstudios.cardinal-components-api:cardinal-components-entity", version.ref = "cca" }
+cca-base = { module = "org.ladysnake.cardinal-components-api:cardinal-components-base", version.ref = "cca" }
+cca-entity = { module = "org.ladysnake.cardinal-components-api:cardinal-components-entity", version.ref = "cca" }
 fpa = { module = "me.lucko:fabric-permissions-api", version.ref = "fpa" }
 elmendorf = { module = "org.ladysnake:elmendorf", version.ref = "elmendorf"}

@@ -18,7 +18,7 @@
 package org.ladysnake.impersonate;
 
 import com.mojang.authlib.GameProfile;
-import dev.onyxstudios.cca.api.v3.component.Component;
+import org.ladysnake.cca.api.v3.component.Component;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;

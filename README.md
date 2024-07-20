@@ -55,6 +55,9 @@ If you only grant `impersonate.command.disguise.self`, players will only be able
 
 ## Adding Impersonate to your project
 
+> [!NOTE]
+> You can find buildscript samples for any Minecraft version on the wiki: https://ladysnake.org/wiki/impersonate#using-impersonate-for-developers
+
 You can add the library by inserting the following in your `build.gradle` :
 
 **Note 1: since MC 1.17 builds, the Impersonate dependency must be lowercase.**
@@ -83,8 +86,8 @@ dependencies {
     include "org.ladysnake:impersonate:${impersonate_version}"
     // Impersonate dependencies
     include "me.lucko:fabric-permissions-api:${fpa_version}"
-    include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}"
-    include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}"
+    include "org.ladysnake.cardinal-components-api:cardinal-components-base:${cca_version}"
+    include "org.ladysnake.cardinal-components-api:cardinal-components-entity:${cca_version}"
 }
 ```
 
