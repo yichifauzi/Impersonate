@@ -57,7 +57,7 @@ public abstract class ServerCommonNetworkHandlerMixin {
                 }
             } else if (packet instanceof PlayerListS2CPacket listPacket) {
                 if (this.existsImpersonator()) {
-                    PlayerListS2CPacket copy = PacketMeddling.copyPacket(listPacket, PlayerListS2CPacket::new);
+                    PlayerListS2CPacket copy = PacketMeddling.copyPacket(listPacket, PlayerListS2CPacket.CODEC, server.getRegistryManager());
                     PacketMeddling.resolvePlayerListEntries(copy, player);
                     return copy;
                 }

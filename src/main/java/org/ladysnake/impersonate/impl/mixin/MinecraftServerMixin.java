@@ -51,7 +51,7 @@ public abstract class MinecraftServerMixin implements CommandOutput {
 
     @ModifyVariable(method = "logChatMessage", at = @At("HEAD"), argsOnly = true)
     private MessageType.Parameters revealImpersonatorsInChatMessageContent(MessageType.Parameters params) {
-        return new MessageType.Parameters(params.type(), impersonate$reveal(params.name()), params.targetName() == null ? null : impersonate$reveal(params.targetName()));
+        return new MessageType.Parameters(params.type(), impersonate$reveal(params.name()), params.targetName().map(this::impersonate$reveal));
     }
 
     @Unique

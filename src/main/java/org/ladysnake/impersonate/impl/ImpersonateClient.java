@@ -24,9 +24,8 @@ import org.ladysnake.impersonate.impl.mixin.client.AbstractClientPlayerEntityAcc
 public final class ImpersonateClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        ClientPlayNetworking.registerGlobalReceiver(ServerPlayerSkins.RELOAD_SKIN_PACKET, (client, handler, buf, responseSender) -> client.execute(() -> {
-            assert client.player != null;
-            ((AbstractClientPlayerEntityAccessor) client.player).setPlayerListEntry(null);
-        }));
+        ClientPlayNetworking.registerGlobalReceiver(ReloadSkinPacket.ID, (payload, context) -> {
+            ((AbstractClientPlayerEntityAccessor) context.player()).setPlayerListEntry(null);
+        });
     }
 }

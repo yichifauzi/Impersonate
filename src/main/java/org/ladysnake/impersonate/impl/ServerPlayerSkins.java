@@ -29,6 +29,7 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.s2c.play.CommonPlayerSpawnInfo;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
@@ -74,7 +75,6 @@ import java.util.concurrent.Executors;
  * @author samo_lego
  */
 public final class ServerPlayerSkins {
-    public static final Identifier RELOAD_SKIN_PACKET = new Identifier("impersonate", "impersonation");
     private static final boolean FORCE_VANILLA_RELOADING = Boolean.getBoolean("impersonate.force_vanilla_reloading");
     private static final ExecutorService THREADPOOL = Executors.newCachedThreadPool();
     private static CompletableFuture<Pair<String, String>> currentSkinTask = CompletableFuture.completedFuture(null);
@@ -155,10 +155,10 @@ public final class ServerPlayerSkins {
             trackerEntry.getEntry().startTracking(tracking);
         }
 
-        if (FORCE_VANILLA_RELOADING || !ServerPlayNetworking.canSend(player, RELOAD_SKIN_PACKET)) {
+        if (FORCE_VANILLA_RELOADING || !ServerPlayNetworking.canSend(player, ReloadSkinPacket.ID)) {
             reloadSkinVanilla(player);
         } else {
-            ServerPlayNetworking.send(player, RELOAD_SKIN_PACKET, PacketByteBufs.empty());
+            ServerPlayNetworking.send(player, ReloadSkinPacket.INSTANCE);
         }
     }
 
@@ -167,7 +167,7 @@ public final class ServerPlayerSkins {
         ServerWorld targetWorld = (ServerWorld) player.getWorld();
         player.networkHandler.sendPacket(new PlayerRespawnS2CPacket(
             new CommonPlayerSpawnInfo(
-                targetWorld.getDimensionKey(),
+                targetWorld.getDimensionEntry(),
                 targetWorld.getRegistryKey(),
                 BiomeAccess.hashSeed(targetWorld.getSeed()),
                 player.interactionManager.getGameMode(),
@@ -184,7 +184,7 @@ public final class ServerPlayerSkins {
         player.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
         player.networkHandler.sendPacket(new HealthUpdateS2CPacket(player.getHealth(), player.getHungerManager().getFoodLevel(), player.getHungerManager().getSaturationLevel()));
         for (StatusEffectInstance statusEffect : player.getStatusEffects()) {
-            player.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffect));
+            player.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffect, true));
         }
         player.sendAbilitiesUpdate();
         player.server.getPlayerManager().sendWorldInfo(player, targetWorld);

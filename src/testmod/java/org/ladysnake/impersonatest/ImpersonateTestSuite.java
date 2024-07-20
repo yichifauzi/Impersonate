@@ -97,7 +97,7 @@ public class ImpersonateTestSuite implements FabricGameTest {
             ctx.getWorld().getServer(),
             new MockClientConnection(NetworkSide.CLIENTBOUND),
             player,
-            ConnectedClientData.createDefault(player.getGameProfile())
+            ConnectedClientData.createDefault(player.getGameProfile(), false)
         );
         Impersonator.get(player).impersonate(IMPERSONATION_KEY, new GameProfile(UUID.randomUUID(), "impersonated"));
         String text = "Hi";

@@ -21,12 +21,15 @@ import com.mojang.authlib.GameProfile;
 import dev.onyxstudios.cca.api.v3.component.CopyableComponent;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
@@ -198,29 +201,19 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
     @Override
     public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
         GameProfile profile = this.getImpersonatedProfile();
-        UUID id = profile == null ? null : profile.getId();
-        String name = profile == null ? null : profile.getName();
-        buf.writeByte((id != null ? ID_PRESENT : 0) | (name != null ? NAME_PRESENT : 0));
-        if (id != null) {
-            buf.writeUuid(id);
-        }
-        if (name != null) {
-            buf.writeString(name);
+        if (profile == null) {
+            buf.writeBoolean(false);
+        } else {
+            buf.writeBoolean(true);
+            PacketCodecs.GAME_PROFILE.encode(buf, profile);
         }
     }
 
     @Override
     public void applySyncPacket(PacketByteBuf buf) {
-        byte flags = buf.readByte();
-        UUID id = null;
-        String name = null;
-        if ((flags & ID_PRESENT) != 0) {
-            id = buf.readUuid();
-        }
-        if ((flags & NAME_PRESENT) != 0) {
-            name = buf.readString();
-        }
-        this.setImpersonatedProfile((id == null && name == null) ? null : new GameProfile(id, name));
+        boolean present = buf.readBoolean();
+        GameProfile profile = present ? PacketCodecs.GAME_PROFILE.decode(buf) : null;
+        this.setImpersonatedProfile(profile);
     }
 
     @Override
@@ -231,9 +224,11 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
             for (int i = 0; i < impersonations.size(); i++) {
                 NbtCompound nbtEntry = impersonations.getCompound(i);
                 Identifier key = Identifier.tryParse(nbtEntry.getString("impersonation_key"));
-                GameProfile profile = NbtHelper.toGameProfile(nbtEntry);
-                if (key != null && profile != null) {
-                    this.stackedImpersonations.put(key, profile);
+                if (key != null) {
+                    ProfileComponent.CODEC
+                        .parse(NbtOps.INSTANCE, nbtEntry)
+                        .resultOrPartial(err -> Impersonate.LOGGER.error("Failed to load impersonated profile: {}", err))
+                        .ifPresent(profile -> this.stackedImpersonations.put(key, profile.gameProfile()));
                 }
             }
             this.resetImpersonation();
@@ -245,9 +240,9 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
         if (this.isImpersonating()) {
             NbtList profiles = new NbtList();
             for (var entry : this.stackedImpersonations.entrySet()) {
-                NbtCompound nbtEntry = new NbtCompound();
+                NbtCompound nbtEntry = (NbtCompound) ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, new ProfileComponent(entry.getValue())).getOrThrow();
                 nbtEntry.putString("impersonation_key", entry.getKey().toString());
-                profiles.add(NbtHelper.writeGameProfile(nbtEntry, entry.getValue()));
+                profiles.add(nbtEntry);
             }
             tag.put("impersonations", profiles);
         }

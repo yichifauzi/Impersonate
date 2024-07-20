@@ -24,12 +24,14 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ladysnake.impersonate.impl.ImpersonateCommand;
 import org.ladysnake.impersonate.impl.ImpersonateGamerules;
 import org.ladysnake.impersonate.impl.PlayerImpersonator;
+import org.ladysnake.impersonate.impl.ReloadSkinPacket;
 
 /**
  * Main entrypoint for Impersonate
@@ -39,15 +41,20 @@ import org.ladysnake.impersonate.impl.PlayerImpersonator;
 public final class Impersonate implements ModInitializer, EntityComponentInitializer {
     public static final Logger LOGGER = LogManager.getLogger("Impersonate");
     public static final ComponentKey<Impersonator> IMPERSONATION = ComponentRegistryV3.INSTANCE.getOrCreate(
-        new Identifier("impersonate", "impersonation"),
+        id("impersonation"),
         Impersonator.class
     );
+
+    public static Identifier id(String path) {
+        return new Identifier("impersonate", path);
+    }
 
     @Override
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, acc, dedicated) -> ImpersonateCommand.register(dispatcher));
         ImpersonateGamerules.init();
         PlayerImpersonator.init();
+        PayloadTypeRegistry.playS2C().register(ReloadSkinPacket.ID, ReloadSkinPacket.CODEC);
     }
 
     @Override
