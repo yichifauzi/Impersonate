@@ -19,6 +19,7 @@ package io.github.ladysnake.impersonate.impl.mixin;
 
 import com.mojang.authlib.GameProfile;
 import io.github.ladysnake.impersonate.Impersonate;
+import io.github.ladysnake.impersonate.Impersonator;
 import net.minecraft.server.command.ListCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -42,7 +43,7 @@ public abstract class ListCommandMixin {
             Object[] args = cnt.getArgs();
             // Defend against other mods changing the text
             if (args.length == 2 && args[0] instanceof Text && args[1] instanceof UUID) {
-                GameProfile impersonatedProfile = Impersonate.IMPERSONATION.get(player).getImpersonatedProfile();
+                GameProfile impersonatedProfile = Impersonator.get(player).getImpersonatedProfile();
 
                 if (impersonatedProfile != null) {
                     // Name is already covered by PlayerEntity#getName mixin

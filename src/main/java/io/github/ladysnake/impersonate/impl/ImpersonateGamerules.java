@@ -17,6 +17,7 @@
  */
 package io.github.ladysnake.impersonate.impl;
 
+import io.github.ladysnake.impersonate.Impersonator;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -27,7 +28,7 @@ public final class ImpersonateGamerules {
         register("fakeCapes", GameRuleFactory.createBooleanRule(false, (server, rule) -> {
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                 if (rule.get()) {
-                    ((PlayerEntityExtensions)player).impersonate_resetCape();
+                    ((PlayerEntityExtensions) player).impersonate_resetCape();
                 } else {
                     ((PlayerEntityExtensions) player).impersonate_disableCape();
                 }
@@ -35,7 +36,13 @@ public final class ImpersonateGamerules {
         }));
 
     public static final GameRules.Key<GameRules.BooleanRule> OP_REVEAL_IMPERSONATIONS =
-        register("opRevealImpersonations", GameRuleFactory.createBooleanRule(true));
+        register("opRevealImpersonations", GameRuleFactory.createBooleanRule(true, (server, rule) -> {
+            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                if (Impersonator.get(player) instanceof PlayerImpersonator playerImpersonator) {
+                    playerImpersonator.syncChanges(playerImpersonator.getImpersonatedProfile());
+                }
+            }
+        }));
 
     public static final GameRules.Key<GameRules.BooleanRule> LOG_REVEAL_IMPERSONATIONS =
         register("logRevealImpersonations", GameRuleFactory.createBooleanRule(true));

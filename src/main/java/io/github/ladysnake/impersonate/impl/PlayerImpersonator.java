@@ -104,17 +104,17 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
             this.impersonatedProfile = profile;
             this.editedProfile = profile == null ? null : new GameProfile(this.getActualProfile().getId(), this.impersonatedProfile.getName());
             this.syncChanges(profile);
-            Impersonate.IMPERSONATION.sync(this.player);
         }
     }
 
-    private void syncChanges(@Nullable GameProfile profile) {
+    public void syncChanges(@Nullable GameProfile profile) {
         if (this.player instanceof ServerPlayerEntity serverPlayer && serverPlayer.networkHandler != null) {
             updatePlayerLists(new PlayerRemoveS2CPacket(List.of(this.player.getUuid())));
             this.applyCapeGamerule(serverPlayer, profile);
             ServerPlayerSkins.setSkin(serverPlayer, profile == null ? this.getActualProfile() : profile);
             updatePlayerLists(PlayerListS2CPacket.entryFromPlayer(List.of(serverPlayer)));
         }
+        Impersonate.IMPERSONATION.sync(this.player);
     }
 
     private void applyCapeGamerule(ServerPlayerEntity player, GameProfile impersonatedProfile) {

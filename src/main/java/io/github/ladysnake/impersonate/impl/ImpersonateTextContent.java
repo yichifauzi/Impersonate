@@ -25,6 +25,7 @@ import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextContent;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class ImpersonateTextContent implements RecipientAwareTextContent {
@@ -39,8 +40,9 @@ public class ImpersonateTextContent implements RecipientAwareTextContent {
     public static TextContent get(PlayerEntity player, boolean reveal) {
         Impersonator impersonator = Impersonator.get(player);
         String fakeName = impersonator.getEditedProfile().getName();
-        String trueText = String.format("%s(%s)", fakeName, player.getGameProfile().getName());
-        return new ImpersonateTextContent(trueText, fakeName, reveal);
+        String trueName = player.getGameProfile().getName();
+        String trueText = String.format("%s(%s)", fakeName, trueName);
+        return new ImpersonateTextContent(trueText, fakeName, reveal && !Objects.equals(fakeName, trueName));
     }
 
     private ImpersonateTextContent(String trueText, String fakedText, boolean revealed) {
