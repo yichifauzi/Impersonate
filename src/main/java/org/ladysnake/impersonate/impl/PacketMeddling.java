@@ -42,7 +42,7 @@ public final class PacketMeddling {
         for (PlayerListS2CPacket.Entry entry : packet.getEntries()) {
             PlayerEntity playerEntry = player.server.getPlayerManager().getPlayer(entry.profileId());
             if (playerEntry != null) {
-                Impersonator impersonator = Impersonate.IMPERSONATION.get(playerEntry);
+                Impersonator impersonator = Impersonator.get(playerEntry);
                 if (impersonator.isImpersonating()) {
                     // OPs get the true profile with semi-fake display name, others get a complete lie
                     PlayerListS2CPacketEntryAccessor accessibleEntry = (PlayerListS2CPacketEntryAccessor) (Object) entry;

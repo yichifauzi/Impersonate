@@ -1,7 +1,8 @@
 ------------------------------------------------------
 Version 3.0.1
 ------------------------------------------------------
-- Fixed impersonator's names appearing as "Faked(Faked)" for operators when the `opRevealImpersonations` gamerule is off
+- Fixed impersonator's names appearing as "Faked(Faked)" for operators when the `impersonate:opRevealImpersonations` gamerule is off
+- Toggling the `impersonate:opRevealImpersonations` gamerule now properly updates usernames without needing a re-log
 
 ------------------------------------------------------
 Version 3.0.0
