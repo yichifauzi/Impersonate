@@ -53,7 +53,7 @@ import java.util.UUID;
 
 public class ImpersonateTestSuite implements FabricGameTest {
 
-    public static final Identifier IMPERSONATION_KEY = new Identifier("impersonatest", "key");
+    public static final Identifier IMPERSONATION_KEY = Impersonatest.id("key");
 
     @GameTest(templateName = EMPTY_STRUCTURE)
     public void nameChanges(TestContext ctx) {
@@ -117,16 +117,16 @@ public class ImpersonateTestSuite implements FabricGameTest {
                 messagePacker.pack(new MessageBody(text, timestamp, salt, lastSeenMessages)),
                 new LastSeenMessageList.Acknowledgment(0, new BitSet())
             ));
-//            ctx.verifyConnection(player, conn -> conn.sent(
-//                ChatMessageS2CPacket.class,
-//                chatPacket -> chatPacket.serializedParameters().name().getString()
-//                    .equals("impersonated(test-mock-player)"))
-//            );
-//            ctx.verifyConnection(otherPlayer, conn -> conn.sent(
-//                ChatMessageS2CPacket.class,
-//                chatPacket -> chatPacket.serializedParameters().name().getString()
-//                    .equals("impersonated"))
-//            );
+            ctx.verifyConnection(player, conn -> conn.sent(
+                ChatMessageS2CPacket.class,
+                chatPacket -> chatPacket.serializedParameters().name().getString()
+                    .equals("impersonated(test-mock-player)"))
+            );
+            ctx.verifyConnection(otherPlayer, conn -> conn.sent(
+                ChatMessageS2CPacket.class,
+                chatPacket -> chatPacket.serializedParameters().name().getString()
+                    .equals("impersonated"))
+            );
             ctx.complete();
         } finally {
             playerManager.removeFromOperators(player.getGameProfile());

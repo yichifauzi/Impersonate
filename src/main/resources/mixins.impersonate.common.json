@@ -16,7 +16,7 @@
     "ServerCommonNetworkHandlerMixin",
     "ServerPlayerEntityMixin",
     "TextMixin",
-    "ThreadedAnvilChunkStorageAccessor",
+    "ServerChunkLoadingManagerAccessor",
     "TranslatableTextContentMixin"
   ],
   "injectors": {

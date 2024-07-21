@@ -18,12 +18,12 @@
 package org.ladysnake.impersonate.impl.mixin.compat;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerModelPart;
 import org.jetbrains.annotations.Nullable;
-import org.ladysnake.impersonate.Impersonator;
 import org.ladysnake.effective.cosmetics.EffectiveCosmetics;
 import org.ladysnake.effective.cosmetics.data.PlayerCosmeticData;
+import org.ladysnake.impersonate.Impersonator;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,7 +35,7 @@ import java.util.UUID;
 
 @Mixin(EffectiveCosmetics.class)
 public abstract class EffectiveCosmeticsMixin {
-    @Shadow
+    @Shadow(remap = false)
     private static Map<UUID, PlayerCosmeticData> PLAYER_COSMETICS;
 
     @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference", "InvalidInjectorMethodSignature"})

@@ -1,7 +1,7 @@
 [versions]
-cca = "6.0.0"
+cca = "6.1.1"
 fpa = "0.2-SNAPSHOT"
-elmendorf = "0.12.0-SNAPSHOT"
+elmendorf = "0.13.0"
 
 [libraries]
 cca-base = { module = "org.ladysnake.cardinal-components-api:cardinal-components-base", version.ref = "cca" }

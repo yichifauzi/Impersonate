@@ -24,12 +24,10 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.datafixers.util.Pair;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.s2c.play.CommonPlayerSpawnInfo;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
@@ -39,10 +37,9 @@ import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerChunkLoadingManager;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.server.world.ThreadedAnvilChunkStorage;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.ChunkManager;
@@ -52,7 +49,7 @@ import org.jetbrains.annotations.Nullable;
 import org.ladysnake.impersonate.Impersonate;
 import org.ladysnake.impersonate.Impersonator;
 import org.ladysnake.impersonate.impl.mixin.EntityTrackerAccessor;
-import org.ladysnake.impersonate.impl.mixin.ThreadedAnvilChunkStorageAccessor;
+import org.ladysnake.impersonate.impl.mixin.ServerChunkLoadingManagerAccessor;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
@@ -148,8 +145,8 @@ public final class ServerPlayerSkins {
 
         ChunkManager manager = player.getWorld().getChunkManager();
         assert manager instanceof ServerChunkManager;
-        ThreadedAnvilChunkStorage storage = ((ServerChunkManager) manager).threadedAnvilChunkStorage;
-        EntityTrackerAccessor trackerEntry = ((ThreadedAnvilChunkStorageAccessor) storage).getEntityTrackers().get(player.getId());
+        ServerChunkLoadingManager storage = ((ServerChunkManager) manager).chunkLoadingManager;
+        EntityTrackerAccessor trackerEntry = ((ServerChunkLoadingManagerAccessor) storage).getEntityTrackers().get(player.getId());
 
         for (ServerPlayerEntity tracking : PlayerLookup.tracking(player)) {
             trackerEntry.getEntry().startTracking(tracking);

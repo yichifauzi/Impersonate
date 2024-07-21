@@ -26,7 +26,7 @@ import net.minecraft.util.Identifier;
 public final class Impersonatest implements ModInitializer {
 
     public static Identifier id(String path) {
-        return new Identifier("impersonatest", path);
+        return Identifier.of("impersonatest", path);
     }
 
     @Override

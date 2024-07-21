@@ -29,6 +29,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import org.ladysnake.impersonate.Impersonate;
 import org.ladysnake.impersonate.Impersonator;
 
 import java.util.Collection;
@@ -40,7 +41,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public final class ImpersonateCommand {
 
-    public static final Identifier DEFAULT_IMPERSONATION_KEY = new Identifier("impersonate:command");
+    public static final Identifier DEFAULT_IMPERSONATION_KEY = Impersonate.id("command");
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("impersonate")

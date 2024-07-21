@@ -46,7 +46,7 @@ public final class Impersonate implements ModInitializer, EntityComponentInitial
     );
 
     public static Identifier id(String path) {
-        return new Identifier("impersonate", path);
+        return Identifier.of("impersonate", path);
     }
 
     @Override
